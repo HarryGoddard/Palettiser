@@ -3,7 +3,7 @@ import os
 import glob
 from PIL import Image, ImageDraw, ImageFont, ExifTags, ImageOps
 from colorthief import ColorThief
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # Constants
 MODE = 1
@@ -33,8 +33,8 @@ def extract_exif_data(exif):
             if k not in ExifTags.TAGS:
                 continue
             if ExifTags.TAGS[k] == "FocalLength":
-                foc = f"{v}mm".strip()
-            if ExifTags.TAGS[k] == "ApertureValue":
+                foc = f"{int(v)}mm".strip()
+            if ExifTags.TAGS[k] == "FNumber":
                 ape = f"f/{round(float(v), 2)}".strip()
             if ExifTags.TAGS[k] == "LensModel":
                 lmd = v.rstrip("\0").split("|")[0]
@@ -74,12 +74,23 @@ def calculate_dimensions(im, maxdim):
     return border, bold, sub, cour
 
 
-def process_image(image_path, output_dir):
+def process_image(image_path, output_dir, font_paths):
     """
     Process the image, add a border, extract EXIF data, and save a new image with EXIF information and color palette.
     :param image_path: Path to the input image file.
     :param output_dir: Directory where the processed image will be saved.
+    :param font_paths: Paths to pre-loaded font files.
     """
+    # Skip processing if the output file already exists
+    base_filename = os.path.basename(image_path)
+    filename, ext = os.path.splitext(base_filename)
+    new_filename = f"{filename}_PRC{ext}"
+    save_path = os.path.join(output_dir, new_filename)
+
+    if os.path.exists(save_path):
+        print(f"Skipping {image_path}, already processed.")
+        return
+
     try:
         im = Image.open(image_path).convert("RGB")
         im = ImageOps.exif_transpose(im)  # Handle EXIF rotation
@@ -91,10 +102,15 @@ def process_image(image_path, output_dir):
         maxdim = max(im.size[0], im.size[1])
         border, bold, sub, cour = calculate_dimensions(im, maxdim)
 
-        # Load fonts
-        bold_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", bold)
-        sub_font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", sub)
-        cour_font = ImageFont.truetype("C:/Windows/Fonts/cour.ttf", cour)
+        # Dynamically calculate font sizes based on the image size (maxdim)
+        bold_font_size = int(bold)
+        sub_font_size = int(sub)
+        cour_font_size = int(cour)
+
+        # Load fonts within the process with dynamically calculated sizes
+        bold_font = ImageFont.truetype(font_paths['bold'], bold_font_size)
+        sub_font = ImageFont.truetype(font_paths['sub'], sub_font_size)
+        cour_font = ImageFont.truetype(font_paths['cour'], cour_font_size)
 
         # Create new image with additional space for EXIF data and palette
         if MODE == 1:
@@ -126,7 +142,7 @@ def process_image(image_path, output_dir):
 
             # Get color palette from the image
             ct = ColorThief(image_path)
-            palette = ct.get_palette(color_count=6, quality=2)
+            palette = ct.get_palette(color_count=6, quality=10)  # Adjusted quality for faster processing
 
             # Draw the palette as colored rectangles at the bottom
             offy = border + int((BOLD_RATIO + SUB_RATIO) * maxdim) + border // 2 + im.size[1] + border // 2
@@ -135,30 +151,36 @@ def process_image(image_path, output_dir):
                 d.rectangle(coords, fill=palette[x])
 
             # Save the processed image in the output directory
-            base_filename = os.path.basename(image_path)
-            filename, ext = os.path.splitext(base_filename)
-            new_filename = f"{filename}_PRC{ext}"
-            save_path = os.path.join(output_dir, new_filename)
             nim.save(save_path)
             print(f"Processed and saved: {save_path}")
+
     except Exception as e:
         print(f"Error processing {image_path}: {e}")
 
 
 def process_images_in_parallel(image_files, output_dir):
     """
-    Process multiple images concurrently using a thread pool.
+    Process multiple images concurrently using a process pool.
     :param image_files: List of image file paths.
     :param output_dir: Directory to save processed images.
     """
 
     cpu_count = os.cpu_count()
-    max_workers = cpu_count * 2
-    print(f"CPU count = {cpu_count}. Threads set to {max_workers}.")
+    max_workers = cpu_count  # Use one process per CPU core
+    print(f"CPU count = {cpu_count}. Processes set to {max_workers}.")
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        print(f"Executing with {max_workers} threads.")
-        future_to_image = {executor.submit(process_image, image_file, output_dir): image_file for image_file in image_files}
+    # Font file paths to pass to subprocesses
+    font_paths = {
+        'bold': "C:/Windows/Fonts/arial.ttf",
+        'sub': "C:/Windows/Fonts/arial.ttf",
+        'cour': "C:/Windows/Fonts/cour.ttf"
+    }
+
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        future_to_image = {
+            executor.submit(process_image, image_file, output_dir, font_paths): image_file
+            for image_file in image_files
+        }
 
         for future in as_completed(future_to_image):
             image_file = future_to_image[future]
@@ -184,7 +206,7 @@ if __name__ == "__main__":
     # Process all image files in the directory (JPEG and PNG formats)
     image_files = glob.glob(os.path.join(input_directory, "*.jpg")) + glob.glob(os.path.join(input_directory, "*.png"))
 
-    # Process images in parallel using multithreading
+    # Process images in parallel using multiprocessing
     process_images_in_parallel(image_files, output_directory)
 
     print("All images saved.")
