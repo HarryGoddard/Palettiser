@@ -85,16 +85,28 @@ def process_image(image_path, output_dir, font_paths):
     base_filename = os.path.basename(image_path)
     filename, ext = os.path.splitext(base_filename)
     new_filename = f"{filename}_PRC{ext}"
-    save_path = os.path.join(output_dir, new_filename)
-
-    if os.path.exists(save_path):
-        print(f"Skipping {image_path}, already processed.")
-        return
 
     try:
         im = Image.open(image_path).convert("RGB")
         im = ImageOps.exif_transpose(im)  # Handle EXIF rotation
         exif = im.getexif()
+
+        # Determine whether the image is portrait or landscape
+        if im.width > im.height:
+            subfolder = "landscape"
+        else:
+            subfolder = "portrait"
+
+        # Create the subfolder in the output directory if it doesn't exist
+        save_dir = os.path.join(output_dir, subfolder)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        save_path = os.path.join(save_dir, new_filename)
+
+        if os.path.exists(save_path):
+            print(f"Skipping {image_path}, already processed.")
+            return
 
         # Extract EXIF data
         foc, ape, lmd, iso, exp, date, time, mod = extract_exif_data(exif)
