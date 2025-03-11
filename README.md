@@ -47,18 +47,18 @@ PalettePro is a Python script that processes images by adding camera details and
 ### Before
 
 #### Landscape
-![Before Landscape](examples/before_landscape.jpg)
+<img src="examples/before_landscape.jpg" alt="Before Landscape" width="300">
 
 #### Portrait
-![Before Portrait](examples/before_portrait.jpg)
+<img src="examples/before_portrait.jpg" alt="Before Portrait" width="300">
 
 ### After
 
 #### Landscape
-![After Landscape](examples/after_landscape.jpg)
+<img src="examples/after_landscape.jpg" alt="After Landscape" width="300">
 
 #### Portrait
-![After Portrait](examples/after_portrait.jpg)
+<img src="examples/after_portrait.jpg" alt="After Portrait" width="300">
 
 ## License
 
