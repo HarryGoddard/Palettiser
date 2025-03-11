@@ -7,7 +7,6 @@ PalettePro is a Python script that processes images by adding camera details and
 - Extracts and displays EXIF data (camera model, focal length, aperture, ISO, exposure time, date, and time).
 - Adds a color palette extracted from the image.
 - Supports both portrait and landscape images.
-- Resizes portrait images to fit Instagram's 4:5 aspect ratio with a blurred background.
 - Processes images in parallel using multiprocessing.
 
 ## Requirements
@@ -59,6 +58,10 @@ PalettePro is a Python script that processes images by adding camera details and
 
 #### Portrait
 <img src="examples/after_portrait.jpg" alt="After Portrait" width="300">
+
+## Note(s)
+
+For uploading to Instagram, the portrait images can be slightly too tall for Instagram's upload size. To combat this, I recommend using https://www.simpleimageresizer.com/resize-image-for-instagram (unaffiliated!) - or submit a PR to support this feature natively ☺
 
 ## License
 
