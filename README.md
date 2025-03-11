@@ -39,7 +39,7 @@ PalettePro is a Python script that processes images by adding camera details and
 
     Replace [path/to/your/images](http://_vscodecontentref_/0) with the actual path to the directory containing your JPEG and PNG images.
 
-3. The processed images will be saved in a subdirectory named `Palletised` within the input directory, organized into `landscape` and `portrait` subfolders.
+3. The processed images will be saved in a subdirectory named `Paletised` within the input directory, organized into `landscape` and `portrait` subfolders.
 
 ## Example
 

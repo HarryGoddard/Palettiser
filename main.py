@@ -211,7 +211,7 @@ if __name__ == "__main__":
         exit(1)
 
     input_directory = sys.argv[1]
-    output_directory = os.path.join(input_directory, "Palletised")
+    output_directory = os.path.join(input_directory, "Paletised")
 
     # Create the output directory if it doesn't exist
     if not os.path.exists(output_directory):
