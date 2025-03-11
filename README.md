@@ -1,6 +1,6 @@
-# PalettePro
+# Palettiser
 
-PalettePro is a Python script that processes images by adding camera details and a color palette to the bottom of the images. It supports both portrait and landscape images and ensures that portrait images fit Instagram's 4:5 aspect ratio with a blurred background.
+Palettiser is a Python script that processes images by adding camera details and a color palette to the bottom of the images. It supports both portrait and landscape images and ensures that portrait images fit Instagram's 4:5 aspect ratio with a blurred background.
 
 ## Features
 
@@ -19,8 +19,8 @@ PalettePro is a Python script that processes images by adding camera details and
 
 1. Download the release, or clone the repository:
     ```sh
-    git clone https://github.com/yourusername/PalettePro.git
-    cd PalettePro
+    git clone https://github.com/HarryGoddard/Palettiser.git
+    cd Palettiser
     ```
 
 2. Install the required dependencies:
