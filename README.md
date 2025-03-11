@@ -17,7 +17,7 @@ PalettePro is a Python script that processes images by adding camera details and
 
 ## Installation
 
-1. Clone the repository:
+1. Download the release, or clone the repository:
     ```sh
     git clone https://github.com/yourusername/PalettePro.git
     cd PalettePro
