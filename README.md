@@ -6,7 +6,10 @@ Palettiser is a Python script that processes images by adding camera details and
 
 - Extracts and displays EXIF data (camera model, focal length, aperture, ISO, exposure time, date, and time).
 - Adds a color palette extracted from the image.
-- Supports both portrait and landscape images.
+- Supports portrait, landscape, and square images.
+- Supports JPEG, PNG, TIFF, and WebP input images.
+- Supports an optional centered title on each output image.
+- Supports an optional inset border around each output image.
 - Processes images in parallel using multiprocessing.
 
 ## Requirements
@@ -37,7 +40,19 @@ Palettiser is a Python script that processes images by adding camera details and
     python main.py path/to/your/images
     ```
 
-    Replace [path/to/your/images](http://_vscodecontentref_/0) with the actual path to the directory containing your JPEG and PNG images.
+    Replace `path/to/your/images` with the actual path to the directory containing your images.
+
+    To add a title such as `Porto` to every output image:
+
+    ```sh
+    python main.py path/to/your/images --title "Porto"
+    ```
+
+    Add the optional inset border with `--border`, or combine both options:
+
+    ```sh
+    python main.py path/to/your/images --title "Porto" --border
+    ```
 
 3. The processed images will be saved in a subdirectory named `Paletised` within the input directory, organized into `landscape` and `portrait` subfolders.
 
@@ -61,7 +76,7 @@ Palettiser is a Python script that processes images by adding camera details and
 
 ## Note(s)
 
-For uploading to Instagram, the portrait images can be slightly too tall for Instagram's upload size. To combat this, I recommend using https://www.simpleimageresizer.com/resize-image-for-instagram (unaffiliated!) - or submit a PR to support this feature natively ☺
+Processed images are saved in `Paletised/landscape`, `Paletised/portrait`, or `Paletised/square` inside the input directory. The output keeps the source file extension and adds `_PRC` to the filename.
 
 ## License
 
